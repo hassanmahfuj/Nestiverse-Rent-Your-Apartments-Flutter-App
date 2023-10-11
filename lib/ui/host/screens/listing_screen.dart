@@ -5,18 +5,18 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
-class ListingPage extends StatefulWidget {
+class ListingScreen extends StatefulWidget {
   final String? listingId;
 
-  const ListingPage({super.key, this.listingId});
+  const ListingScreen({super.key, this.listingId});
 
   static const route = "/host/listing";
 
   @override
-  State<ListingPage> createState() => _ListingPageState();
+  State<ListingScreen> createState() => _ListingScreenState();
 }
 
-class _ListingPageState extends State<ListingPage> {
+class _ListingScreenState extends State<ListingScreen> {
   final db = FirebaseFirestore.instance;
 
   int _index = 0;

@@ -3,8 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:nestiverse/gate.dart';
 import 'package:nestiverse/ui/auth.dart';
-import 'package:nestiverse/ui/host/pages/listing_page.dart';
-import 'package:nestiverse/ui/host/pages/listings_page.dart';
+import 'package:nestiverse/ui/host/screens/listing_screen.dart';
+import 'package:nestiverse/ui/host/screens/listings_screen.dart';
 
 class MenuPage extends StatefulWidget {
   const MenuPage({super.key});
@@ -72,7 +72,7 @@ class _MenuPageState extends State<MenuPage> {
             ),
             ListTile(
               onTap: () {
-                Navigator.pushNamed(context, ListingsPage.route);
+                Navigator.pushNamed(context, ListingsScreen.route);
               },
               leading: const Icon(
                 Icons.home_work_outlined,
@@ -89,7 +89,7 @@ class _MenuPageState extends State<MenuPage> {
             ),
             ListTile(
               onTap: () {
-                Navigator.pushNamed(context, ListingPage.route);
+                Navigator.pushNamed(context, ListingScreen.route);
               },
               leading: const Icon(
                 Icons.add_home_work_outlined,

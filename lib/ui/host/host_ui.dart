@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:nestiverse/ui/host/pages/calendar_page.dart';
 import 'package:nestiverse/ui/host/pages/menu_page.dart';
 
 class HostUi extends StatefulWidget {
@@ -26,10 +27,7 @@ class _HostUiState extends State<HostUi> {
       'Index 1: Business',
       style: optionStyle,
     ),
-    Text(
-      'Index 2: School',
-      style: optionStyle,
-    ),
+    CalendarPage(),
     Text(
       'Index 3: School',
       style: optionStyle,

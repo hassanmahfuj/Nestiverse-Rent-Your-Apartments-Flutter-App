@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:nestiverse/ui/traveller/screens/destination_view_screen.dart';
 
 class ExplorePage extends StatefulWidget {
@@ -28,6 +29,18 @@ class _ExplorePageState extends State<ExplorePage> {
       },
       onError: (e) => debugPrint("Error completing: $e"),
     );
+  }
+
+  String _getAvailableDateRangeString(Map<String, dynamic> doc) {
+    String out = "Not available";
+    if (doc.containsKey("availableStartDate") &&
+        doc.containsKey("availableEndDate")) {
+      DateTime s = doc["availableStartDate"].toDate();
+      DateTime e = doc["availableEndDate"].toDate();
+      out =
+          "${DateFormat("MMM d", "en_US").format(s)} - ${DateFormat("MMM d", "en_US").format(e)}";
+    }
+    return out;
   }
 
   @override
@@ -173,7 +186,7 @@ class _ExplorePageState extends State<ExplorePage> {
                         ),
                       ),
                       Text(
-                        _destinations[index]["title"],
+                        _getAvailableDateRangeString(_destinations[index]),
                         style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w400,
@@ -196,7 +209,8 @@ class _ExplorePageState extends State<ExplorePage> {
                             ),
                           ),
                         ],
-                      )
+                      ),
+                      const SizedBox(height: 30),
                     ],
                   ),
                 );

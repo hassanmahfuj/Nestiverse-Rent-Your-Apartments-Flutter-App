@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class DestinationViewScreen extends StatefulWidget {
   final Map<String, dynamic> destination;
@@ -16,6 +17,18 @@ class _DestinationViewScreenState extends State<DestinationViewScreen> {
     "firstName": "Hassan",
     "lastName": "Mahfuj",
   };
+
+  String _getAvailableDateRangeString(Map<String, dynamic> doc) {
+    String out = "Not available";
+    if (doc.containsKey("availableStartDate") &&
+        doc.containsKey("availableEndDate")) {
+      DateTime s = doc["availableStartDate"].toDate();
+      DateTime e = doc["availableEndDate"].toDate();
+      out =
+          "${DateFormat("MMM d", "en_US").format(s)} - ${DateFormat("MMM d", "en_US").format(e)}";
+    }
+    return out;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -157,7 +170,16 @@ class _DestinationViewScreenState extends State<DestinationViewScreen> {
                   const Divider(),
                   const SizedBox(height: 10),
                   ListTile(
-                    onTap: () {},
+                    onTap: () async {
+                      // final DateTimeRange? result = await showDateRangePicker(
+                      //     context: context,
+                      //     firstDate: DateTime(2000),
+                      //     lastDate: DateTime(3000),
+                      //
+                      // );
+                      // print(result?.start);
+                      // print(result?.end);
+                    },
                     contentPadding: const EdgeInsets.all(0),
                     title: const Text(
                       "Availability",
@@ -166,7 +188,8 @@ class _DestinationViewScreenState extends State<DestinationViewScreen> {
                         fontWeight: FontWeight.w500,
                       ),
                     ),
-                    subtitle: const Text("Oct 22 - Oct 27"),
+                    subtitle:
+                        Text(_getAvailableDateRangeString(widget.destination)),
                     trailing: const Icon(Icons.keyboard_arrow_right_rounded),
                   ),
                   const SizedBox(height: 15),
@@ -195,7 +218,7 @@ class _DestinationViewScreenState extends State<DestinationViewScreen> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text("\$${widget.destination["price"]} night"),
-                  const Text("Oct 22 - Oct 27"),
+                  Text(_getAvailableDateRangeString(widget.destination)),
                 ],
               ),
             ),
