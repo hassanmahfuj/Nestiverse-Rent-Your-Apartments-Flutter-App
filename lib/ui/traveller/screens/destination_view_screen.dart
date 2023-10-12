@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:nestiverse/ui/traveller/screens/reserve_screen.dart';
 
 class DestinationViewScreen extends StatefulWidget {
+  final String destinationId;
   final Map<String, dynamic> destination;
 
-  const DestinationViewScreen({super.key, required this.destination});
+  const DestinationViewScreen(
+      {super.key, required this.destinationId, required this.destination});
 
   static const route = "/traveller/destination";
 
@@ -230,7 +233,15 @@ class _DestinationViewScreenState extends State<DestinationViewScreen> {
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        ReserveScreen(listingId: widget.destinationId),
+                  ),
+                );
+              },
               child: const Text("Reserve"),
             ),
           ],

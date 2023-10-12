@@ -12,6 +12,7 @@ class ExplorePage extends StatefulWidget {
 
 class _ExplorePageState extends State<ExplorePage> {
   final List<Map<String, dynamic>> _destinations = [];
+  final List<String> _destinationsId = [];
 
   @override
   void initState() {
@@ -23,6 +24,7 @@ class _ExplorePageState extends State<ExplorePage> {
     FirebaseFirestore.instance.collection("listings").get().then(
       (querySnapshot) {
         for (var docSnapshot in querySnapshot.docs) {
+          _destinationsId.add(docSnapshot.id);
           _destinations.add(docSnapshot.data());
         }
         setState(() {});
@@ -110,6 +112,7 @@ class _ExplorePageState extends State<ExplorePage> {
                       context,
                       MaterialPageRoute(
                         builder: (context) => DestinationViewScreen(
+                            destinationId: _destinationsId[index],
                             destination: _destinations[index]),
                       ),
                     );

@@ -71,14 +71,28 @@ class _CalendarPageState extends State<CalendarPage> {
                           child: ListTile(
                             onTap: () async {
                               DateTime lastCheckoutDate = DateTime.now();
+                              DateTime availableStartDate = DateTime.now();
+                              DateTime availableEndDate = DateTime.now();
+
+                              try {
+                                availableStartDate = snapshot.data!.docs[index]
+                                    ["availableStartDate"].toDate();
+                                availableEndDate = snapshot.data!.docs[index]
+                                    ["availableEndDate"].toDate();
+                              } catch (e) {}
+
                               try {
                                 lastCheckoutDate = snapshot.data!.docs[index]
-                                    ["lastCheckoutDate"];
+                                    ["lastCheckoutDate"].toDate();
                               } catch (e) {}
 
                               final DateTimeRange? result =
                                   await showDateRangePicker(
                                 context: context,
+                                initialDateRange: DateTimeRange(
+                                  start: availableStartDate,
+                                  end: availableEndDate,
+                                ),
                                 firstDate: lastCheckoutDate,
                                 lastDate: lastCheckoutDate.add(
                                   const Duration(days: 30),
