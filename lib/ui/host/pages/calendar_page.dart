@@ -84,6 +84,10 @@ class _CalendarPageState extends State<CalendarPage> {
                               try {
                                 lastCheckoutDate = snapshot.data!.docs[index]
                                     ["lastCheckoutDate"].toDate();
+                                if(lastCheckoutDate.isAfter(availableStartDate)) {
+                                  availableStartDate = lastCheckoutDate;
+                                  availableEndDate = lastCheckoutDate;
+                                }
                               } catch (e) {}
 
                               final DateTimeRange? result =
@@ -106,6 +110,7 @@ class _CalendarPageState extends State<CalendarPage> {
                                     .update({
                                   "availableStartDate": result.start,
                                   "availableEndDate": result.end,
+                                  "status": "Available",
                                 });
                               }
                             },

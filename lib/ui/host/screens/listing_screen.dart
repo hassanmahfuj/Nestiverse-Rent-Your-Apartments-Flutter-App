@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -172,6 +173,7 @@ class _ListingScreenState extends State<ListingScreen> {
 
     final db = FirebaseFirestore.instance;
     final listing = <String, dynamic>{
+      "hostUid": FirebaseAuth.instance.currentUser!.uid,
       "category": _categories[_selectedCategory]["title"],
       "locAddress": _conAddress.text,
       "locLatitude": _locationLat,
@@ -185,6 +187,7 @@ class _ListingScreenState extends State<ListingScreen> {
       "title": _conTitle.text,
       "description": _conDescription.text,
       "price": _conPrice.text,
+      "status": "Reserved",
     };
 
     if (widget.listingId == null) {

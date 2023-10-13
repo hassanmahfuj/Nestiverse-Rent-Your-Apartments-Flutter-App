@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:nestiverse/ui/traveller/screens/reserve_success_screen.dart';
 
 class ReserveScreen extends StatefulWidget {
   final String listingId;
@@ -20,6 +22,7 @@ class _ReserveScreenState extends State<ReserveScreen> {
         .then((DocumentSnapshot doc) {
       final data = doc.data() as Map<String, dynamic>;
 
+      _hostUid = data["hostUid"];
       _title = data["title"];
       _locAddress = data["locAddress"];
       _photo = data["photos"][0];
@@ -40,6 +43,9 @@ class _ReserveScreenState extends State<ReserveScreen> {
     super.initState();
     _getDestination();
   }
+
+  // host info
+  String _hostUid = "";
 
   // basic
   String _title = "";
@@ -72,6 +78,11 @@ class _ReserveScreenState extends State<ReserveScreen> {
   double _taxes = 0;
   double _total = 0;
 
+  // card fields
+  final TextEditingController _conCardNumber = TextEditingController();
+  final TextEditingController _conCardExpiration = TextEditingController();
+  final TextEditingController _conCardCvv = TextEditingController();
+
   void _calcPrices() {
     Duration difference = _reserveEndDate.difference(_reserveStartDate);
     _reserveDays = difference.inDays + 1;
@@ -82,6 +93,52 @@ class _ReserveScreenState extends State<ReserveScreen> {
     _total = _subTotal + _serviceFee + _taxes;
 
     setState(() {});
+  }
+
+  void _requestBooking() async {
+    final db = FirebaseFirestore.instance;
+    final bookData = <String, dynamic>{
+      "hostUid": _hostUid,
+      "guestUid": FirebaseAuth.instance.currentUser!.uid,
+      "listingId": widget.listingId,
+      "listingTitle": _title,
+      "listingAddress": _locAddress,
+      "listingPhoto": _photo,
+      "reserveStartDate": _reserveStartDate,
+      "reserveEndDate": _reserveEndDate,
+      "guestAdult": _adults,
+      "guestChildren": _children,
+      "guestPets": _pets,
+      "listingPrice": _pricePerNight,
+      "reservedDays": _reserveDays,
+      "subTotal": _subTotal,
+      "serviceFee": _serviceFee,
+      "taxes": _taxes,
+      "total": _total,
+      "cardNumber": _conCardNumber.text,
+      "cardExpiration": _conCardExpiration.text,
+      "cardCvv": _conCardCvv.text,
+      "status": "Pending",
+    };
+
+    await db.collection("bookings").add(bookData);
+    await db.collection("listings").doc(widget.listingId).update({
+      "lastCheckoutDate": _reserveEndDate.add(
+        const Duration(days: 1),
+      ),
+      "status": "Reserved",
+    });
+
+    _showReservationSuccessScreen();
+  }
+
+  void _showReservationSuccessScreen() {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const ReserveSuccessScreen(),
+      ),
+    );
   }
 
   @override
@@ -105,7 +162,9 @@ class _ReserveScreenState extends State<ReserveScreen> {
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(15),
                         image: DecorationImage(
-                            image: NetworkImage(_photo), fit: BoxFit.cover),
+                          image: NetworkImage(_photo),
+                          fit: BoxFit.cover,
+                        ),
                       ),
                     ),
                   ),
@@ -524,23 +583,24 @@ class _ReserveScreenState extends State<ReserveScreen> {
             ),
             Container(
               padding: const EdgeInsets.all(20),
-              child: const Column(
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  const Text(
                     "Pay with",
                     style: TextStyle(
                       fontSize: 25,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
                   TextField(
+                    controller: _conCardNumber,
                     keyboardType: TextInputType.number,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 20,
                     ),
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       contentPadding:
                           EdgeInsets.symmetric(vertical: 15, horizontal: 15),
                       labelText: "Card number",
@@ -552,16 +612,17 @@ class _ReserveScreenState extends State<ReserveScreen> {
                       ),
                     ),
                   ),
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
                   Row(
                     children: [
                       Expanded(
                         child: TextField(
+                          controller: _conCardExpiration,
                           keyboardType: TextInputType.number,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 20,
                           ),
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                             contentPadding: EdgeInsets.symmetric(
                                 vertical: 15, horizontal: 15),
                             labelText: "Expiration",
@@ -573,14 +634,15 @@ class _ReserveScreenState extends State<ReserveScreen> {
                           ),
                         ),
                       ),
-                      SizedBox(width: 15),
+                      const SizedBox(width: 15),
                       Expanded(
                         child: TextField(
+                          controller: _conCardCvv,
                           keyboardType: TextInputType.number,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 20,
                           ),
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                             contentPadding: EdgeInsets.symmetric(
                                 vertical: 15, horizontal: 15),
                             labelText: "CVV",
@@ -717,7 +779,9 @@ class _ReserveScreenState extends State<ReserveScreen> {
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
-                    onPressed: () {},
+                    onPressed: () {
+                      _requestBooking();
+                    },
                     child: const Text(
                       "Request to book",
                       style: TextStyle(

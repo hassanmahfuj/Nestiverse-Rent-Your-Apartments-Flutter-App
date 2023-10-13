@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:nestiverse/ui/host/pages/calendar_page.dart';
 import 'package:nestiverse/ui/host/pages/menu_page.dart';
-import 'package:nestiverse/ui/host/pages/today_page.dart';
+import 'package:nestiverse/ui/host/pages/now_page.dart';
 
 class HostUi extends StatefulWidget {
   const HostUi({super.key});
@@ -20,7 +20,7 @@ class _HostUiState extends State<HostUi> {
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   static const List<Widget> _widgetOptions = <Widget>[
-    TodayPage(),
+    NowPage(),
     Text(
       'Index 1: Business',
       style: optionStyle,
@@ -55,7 +55,7 @@ class _HostUiState extends State<HostUi> {
               Icons.home_filled,
               color: Colors.red,
             ),
-            label: 'Today',
+            label: 'Now',
           ),
           BottomNavigationBarItem(
             icon: Icon(

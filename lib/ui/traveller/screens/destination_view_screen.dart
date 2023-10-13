@@ -173,16 +173,6 @@ class _DestinationViewScreenState extends State<DestinationViewScreen> {
                   const Divider(),
                   const SizedBox(height: 10),
                   ListTile(
-                    onTap: () async {
-                      // final DateTimeRange? result = await showDateRangePicker(
-                      //     context: context,
-                      //     firstDate: DateTime(2000),
-                      //     lastDate: DateTime(3000),
-                      //
-                      // );
-                      // print(result?.start);
-                      // print(result?.end);
-                    },
                     contentPadding: const EdgeInsets.all(0),
                     title: const Text(
                       "Availability",
@@ -234,7 +224,7 @@ class _DestinationViewScreenState extends State<DestinationViewScreen> {
                 ),
               ),
               onPressed: () {
-                Navigator.push(
+                Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
                     builder: (context) =>
