@@ -14,8 +14,20 @@ String compositeConversationId(String participantId) {
 }
 
 Future<String> getUsername(String userId) async {
-  final data = await FirebaseFirestore.instance.collection("users").doc(userId).get();
+  final data =
+      await FirebaseFirestore.instance.collection("users").doc(userId).get();
   return data["firstName"] + " " + data["lastName"];
+}
+
+int getRecipientIndex(List<dynamic> participants) {
+  final User? currentUser = FirebaseAuth.instance.currentUser;
+  final String currentUserId = currentUser!.uid;
+  for (int i = 0; i < participants.length; i++) {
+    if (participants[i] != currentUserId) {
+      return i;
+    }
+  }
+  return 0;
 }
 
 Future<void> forceSendMessage(String conversationID, String message) async {
@@ -34,7 +46,7 @@ Future<void> forceSendMessage(String conversationID, String message) async {
 
     final List<String> conversationParticipants = conversationID.split("-");
     final List<String> conversationParticipantsName = [];
-    for(String participant in conversationParticipants) {
+    for (String participant in conversationParticipants) {
       String name = await getUsername(participant);
       conversationParticipantsName.add(name);
     }
@@ -64,48 +76,7 @@ Future<void> forceSendMessage(String conversationID, String message) async {
     'lastSenderName': currentUserName,
     'timestamp': FieldValue.serverTimestamp(),
   });
-  print("done");
 }
-
-// Future<void> startConversation(List<String> participantUserIDs) async {
-//   try {
-//     final FirebaseFirestore firestore = FirebaseFirestore.instance;
-//
-//     final User? currentUser = FirebaseAuth.instance.currentUser;
-//     final String currentUserId = currentUser!.uid;
-//
-//     participantUserIDs.sort();
-//     final String conversationID = participantUserIDs.join('-');
-//
-//     final DocumentSnapshot existingConversationSnapshot =
-//         await firestore.collection('conversations').doc(conversationID).get();
-//
-//     if (existingConversationSnapshot.exists) {
-//       // An existing conversation was found; you can handle this case as needed
-//       // You might navigate to the chat screen for the existing conversation.
-//     } else {
-//       // Create a new conversation document
-//       final DocumentReference conversationRef =
-//           firestore.collection('conversations').doc(conversationID);
-//
-//       // Add the current user and participants to the conversation
-//       final List<String> conversationParticipants = [
-//         currentUserId,
-//         ...participantUserIDs
-//       ];
-//
-//       await conversationRef.set({
-//         'participants': conversationParticipants,
-//         'lastMessage': '', // You can initialize it with an empty message
-//         'timestamp': FieldValue.serverTimestamp(),
-//       });
-//
-//       // You can navigate to the chat screen with the newly created conversation here
-//     }
-//   } catch (e) {
-//     print('Error starting a conversation: $e');
-//   }
-// }
 
 Stream<QuerySnapshot<Map<String, dynamic>>> getConversationsForUser() {
   // Get the current user's ID (you should have authenticated the user already)
@@ -122,55 +93,16 @@ Stream<QuerySnapshot<Map<String, dynamic>>> getConversationsForUser() {
       .snapshots();
 }
 
-// Future<void> sendMessage(String conversationID, String content) async {
-//   try {
-//     // Get the current user's ID (you should have authenticated the user already)
-//     final User? currentUser = FirebaseAuth.instance.currentUser;
-//     final String currentUserId = currentUser!.uid;
-//
-//     // Get a reference to the Firestore instance
-//     final FirebaseFirestore firestore = FirebaseFirestore.instance;
-//
-//     // Create a new message document in the conversation's subcollection
-//     final CollectionReference messagesRef = firestore
-//         .collection('conversations')
-//         .doc(conversationID)
-//         .collection('messages');
-//
-//     await messagesRef.add({
-//       'sender': currentUserId,
-//       'content': content,
-//       'timestamp': FieldValue.serverTimestamp(),
-//     });
-//
-//     // Update the lastMessage and timestamp in the conversation document
-//     await firestore.collection('conversations').doc(conversationID).update({
-//       'lastMessage': content,
-//       'timestamp': FieldValue.serverTimestamp(),
-//     });
-//   } catch (e) {
-//     print('Error sending a message: $e');
-//   }
-// }
+Stream<QuerySnapshot<Map<String, dynamic>>> getConversationMessages(
+    String conversationID) {
+  // Get a reference to the Firestore instance
+  final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-Future<List<QueryDocumentSnapshot>> getConversationMessages(
-    String conversationID) async {
-  try {
-    // Get a reference to the Firestore instance
-    final FirebaseFirestore firestore = FirebaseFirestore.instance;
-
-    // Query the Firestore database to get messages for the specified conversation
-    final QuerySnapshot messagesSnapshot = await firestore
-        .collection('conversations')
-        .doc(conversationID)
-        .collection('messages')
-        .orderBy('timestamp',
-            descending: false) // Adjust the sorting order as needed
-        .get();
-
-    return messagesSnapshot.docs;
-  } catch (e) {
-    print('Error fetching conversation messages: $e');
-    return [];
-  }
+  // Query the Firestore database to get messages for the specified conversation
+  return firestore
+      .collection('conversations')
+      .doc(conversationID)
+      .collection('messages')
+      .orderBy('timestamp', descending: false)
+      .snapshots();
 }

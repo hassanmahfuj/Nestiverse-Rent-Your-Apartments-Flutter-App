@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:nestiverse/service/chat_service.dart';
+import 'package:nestiverse/ui/traveller/screens/chat_screen.dart';
 import 'package:nestiverse/ui/traveller/screens/reserve_screen.dart';
 
 class DestinationViewScreen extends StatefulWidget {
@@ -16,10 +18,18 @@ class DestinationViewScreen extends StatefulWidget {
 }
 
 class _DestinationViewScreenState extends State<DestinationViewScreen> {
-  final Map<String, dynamic> _user = {
-    "firstName": "Hassan",
-    "lastName": "Mahfuj",
-  };
+  String _username = "";
+
+  @override
+  void initState() {
+    super.initState();
+    retrieveUsername();
+  }
+
+  void retrieveUsername() async {
+    _username = await getUsername(widget.destination["hostUid"]);
+    setState(() {});
+  }
 
   String _getAvailableDateRangeString(Map<String, dynamic> doc) {
     String out = "Not available";
@@ -90,7 +100,7 @@ class _DestinationViewScreenState extends State<DestinationViewScreen> {
                     children: [
                       Expanded(
                         child: Text(
-                          "Entire place hosted by ${_user["firstName"]} ${_user["lastName"]}",
+                          "Entire place hosted by $_username",
                           style: const TextStyle(
                             fontSize: 25,
                             fontWeight: FontWeight.w500,
@@ -102,6 +112,28 @@ class _DestinationViewScreenState extends State<DestinationViewScreen> {
                         size: 60,
                       ),
                     ],
+                  ),
+                  const SizedBox(height: 10),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.pink,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    onPressed: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ChatScreen(
+                            conversationId: compositeConversationId(
+                                widget.destination["hostUid"]),
+                          ),
+                        ),
+                      );
+                    },
+                    child: const Text("Send message"),
                   ),
                   const SizedBox(height: 10),
                   Text(

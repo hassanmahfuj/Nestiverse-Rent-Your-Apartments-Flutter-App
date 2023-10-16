@@ -1,34 +1,36 @@
 import 'package:flutter/material.dart';
-import 'package:nestiverse/service/chat_service.dart';
-import 'package:nestiverse/ui/traveller/screens/chat_screen.dart';
 
-class InboxPage extends StatefulWidget {
-  const InboxPage({super.key});
+import '../../../service/chat_service.dart';
+
+class ChatScreen extends StatefulWidget {
+  final String conversationId;
+
+  const ChatScreen({super.key, required this.conversationId});
 
   @override
-  State<InboxPage> createState() => _InboxPageState();
+  State<ChatScreen> createState() => _ChatScreenState();
 }
 
-class _InboxPageState extends State<InboxPage> {
+class _ChatScreenState extends State<ChatScreen> {
+  final TextEditingController _conMessage = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 20),
-          AppBar(
-            title: const Text(
-              "Inbox",
-              style: TextStyle(
-                fontSize: 30,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          "Chats",
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
           ),
+        ),
+      ),
+      body: Column(
+        children: [
           Expanded(
             child: StreamBuilder(
-              stream: getConversationsForUser(),
+              stream: getConversationMessages(widget.conversationId),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
@@ -39,22 +41,8 @@ class _InboxPageState extends State<InboxPage> {
                     itemCount: snapshot.data!.docs.length,
                     itemBuilder: (context, index) {
                       return ListTile(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ChatScreen(
-                                conversationId: snapshot.data!.docs[index].id,
-                              ),
-                            ),
-                          );
-                        },
-                        title: Text(snapshot.data!.docs[index]
-                                ["participantsName"][
-                            getRecipientIndex(
-                                snapshot.data!.docs[index]["participants"])]),
-                        subtitle:
-                            Text(snapshot.data!.docs[index]["lastMessage"]),
+                        title: Text(snapshot.data!.docs[index]["senderName"]),
+                        subtitle: Text(snapshot.data!.docs[index]["message"]),
                       );
                     },
                   );
@@ -74,7 +62,7 @@ class _InboxPageState extends State<InboxPage> {
                         padding:
                             EdgeInsets.symmetric(vertical: 5, horizontal: 0),
                         child: Text(
-                          "No new messages",
+                          "No messages yet",
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.w500,
@@ -86,12 +74,28 @@ class _InboxPageState extends State<InboxPage> {
                             EdgeInsets.symmetric(vertical: 5, horizontal: 15),
                         child: Text(
                             textAlign: TextAlign.center,
-                            "When you contact a Host or send a reservation request, you'll see your messages here."),
-                      ),
+                            "When ypu contact a Host or send a reservation request, you'll see your messages here."),
+                      )
                     ],
                   );
                 }
               },
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(15),
+            child: TextField(
+              controller: _conMessage,
+              decoration: InputDecoration(
+                suffixIcon: IconButton(
+                  icon: const Icon(Icons.send),
+                  onPressed: () async {
+                    await forceSendMessage(
+                        widget.conversationId, _conMessage.text);
+                    _conMessage.clear();
+                  },
+                ),
+              ),
             ),
           ),
         ],
