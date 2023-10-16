@@ -35,6 +35,11 @@ class _BookingDetailsState extends State<BookingDetails> {
                     db.collection("bookings").doc(widget.bookingId).snapshots(),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
+                    // if reserve start date is greeter than today's date is
+                    // meant to be expired request
+                    DateTime s = snapshot.data!["reserveStartDate"].toDate();
+                    bool isExpired = s.isAfter(DateTime.now());
+
                     return Column(
                       children: [
                         Container(
@@ -161,7 +166,8 @@ class _BookingDetailsState extends State<BookingDetails> {
                         ),
                         const SizedBox(height: 10),
                         Visibility(
-                          visible: snapshot.data!["status"] == "Pending",
+                          // manage status if its pending or not expired
+                          visible: snapshot.data!["status"] == "Pending" || !isExpired,
                           child: Card(
                             shape: const RoundedRectangleBorder(
                               side: BorderSide(color: Colors.grey),
@@ -188,7 +194,7 @@ class _BookingDetailsState extends State<BookingDetails> {
                                             .collection("bookings")
                                             .doc(widget.bookingId)
                                             .update({
-                                          "status": "Cancelled",
+                                          "status": "Canceled",
                                         });
 
                                         // listing status will be Available and lastCheckoutDate field delete

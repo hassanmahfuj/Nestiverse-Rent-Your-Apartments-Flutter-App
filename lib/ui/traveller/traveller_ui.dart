@@ -1,7 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:nestiverse/ui/traveller/pages/explore_page.dart';
+import 'package:nestiverse/ui/traveller/pages/inbox_page.dart';
 import 'package:nestiverse/ui/traveller/pages/profile_page.dart';
+import 'package:nestiverse/ui/traveller/pages/trips_page.dart';
+import 'package:nestiverse/ui/traveller/pages/wishlists_page.dart';
 
 class TravellerUi extends StatefulWidget {
   const TravellerUi({super.key});
@@ -16,22 +19,11 @@ class _TravellerUiState extends State<TravellerUi> {
   final db = FirebaseFirestore.instance;
 
   int _selectedIndex = 0;
-  static const TextStyle optionStyle =
-      TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   static const List<Widget> _widgetOptions = <Widget>[
     ExplorePage(),
-    Text(
-      'Index 1: Business',
-      style: optionStyle,
-    ),
-    Text(
-      'Index 2: School',
-      style: optionStyle,
-    ),
-    Text(
-      'Index 3: School',
-      style: optionStyle,
-    ),
+    WishlistsPage(),
+    TripsPage(),
+    InboxPage(),
     ProfilePage(),
   ];
 
