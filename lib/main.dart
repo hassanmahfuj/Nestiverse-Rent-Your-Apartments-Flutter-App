@@ -26,9 +26,10 @@ class MyApp extends StatelessWidget {
       title: 'Nestiverse',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.pink),
-          useMaterial3: true,
-          fontFamily: 'AirbnbCereal'),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.pink),
+        useMaterial3: true,
+        fontFamily: 'AirbnbCereal',
+      ),
       initialRoute: Gate.route,
       routes: {
         Gate.route: (context) => const Gate(),
