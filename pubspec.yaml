@@ -19,6 +19,9 @@ dependencies:
   firebase_storage: ^11.2.8
   image_picker: ^1.0.4
   intl: ^0.18.1
+  flutter_native_splash: ^2.3.4
+  carousel_slider: ^4.2.1
+  photo_view: ^0.14.0
 
 dev_dependencies:
   flutter_test:
@@ -31,6 +34,10 @@ flutter_launcher_icons:
   android: true
   ios: true
   image_path: "assets/icon/icon.png"
+
+flutter_native_splash:
+  color: "#FFFFFF"
+  image: "assets/icon/icon.png"
 
 # The following section is specific to Flutter packages.
 flutter:

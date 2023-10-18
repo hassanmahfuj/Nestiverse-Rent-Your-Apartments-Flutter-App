@@ -1,7 +1,9 @@
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:nestiverse/service/chat_service.dart';
 import 'package:nestiverse/ui/traveller/screens/chat_screen.dart';
+import 'package:nestiverse/ui/traveller/screens/full_photo_view.dart';
 import 'package:nestiverse/ui/traveller/screens/reserve_screen.dart';
 
 class DestinationViewScreen extends StatefulWidget {
@@ -19,6 +21,7 @@ class DestinationViewScreen extends StatefulWidget {
 
 class _DestinationViewScreenState extends State<DestinationViewScreen> {
   String _username = "";
+  String _availableDates = "Not available";
 
   @override
   void initState() {
@@ -32,15 +35,14 @@ class _DestinationViewScreenState extends State<DestinationViewScreen> {
   }
 
   String _getAvailableDateRangeString(Map<String, dynamic> doc) {
-    String out = "Not available";
     if (doc.containsKey("availableStartDate") &&
         doc.containsKey("availableEndDate")) {
       DateTime s = doc["availableStartDate"].toDate();
       DateTime e = doc["availableEndDate"].toDate();
-      out =
+      _availableDates =
           "${DateFormat("MMM d", "en_US").format(s)} - ${DateFormat("MMM d", "en_US").format(e)}";
     }
-    return out;
+    return _availableDates;
   }
 
   @override
@@ -52,15 +54,37 @@ class _DestinationViewScreenState extends State<DestinationViewScreen> {
           children: [
             Stack(
               children: <Widget>[
-                Container(
-                  height: 300,
-                  decoration: BoxDecoration(
-                    // borderRadius: BorderRadius.circular(15),
-                    image: DecorationImage(
-                      image: NetworkImage(widget.destination["photos"][0]),
-                      fit: BoxFit.cover,
-                    ),
+                // Container(
+                //   height: 300,
+                //   decoration: BoxDecoration(
+                //     // borderRadius: BorderRadius.circular(15),
+                //     image: DecorationImage(
+                //       image: NetworkImage(widget.destination["photos"][0]),
+                //       fit: BoxFit.cover,
+                //     ),
+                //   ),
+                // ),
+                CarouselSlider(
+                  options: CarouselOptions(
+                    height: 300,
+                    autoPlay: true,
                   ),
+                  items: widget.destination["photos"].map<Widget>((i) {
+                    return InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => FullPhotoView(photoUrl: i),
+                          ),
+                        );
+                      },
+                      child: Image.network(
+                        i,
+                        fit: BoxFit.cover,
+                      ),
+                    );
+                  }).toList(),
                 ),
                 Positioned(
                   top: 30,
@@ -218,6 +242,35 @@ class _DestinationViewScreenState extends State<DestinationViewScreen> {
                     trailing: const Icon(Icons.keyboard_arrow_right_rounded),
                   ),
                   const SizedBox(height: 15),
+                  const Divider(),
+                  const SizedBox(height: 10),
+                  const ListTile(
+                    contentPadding: EdgeInsets.all(0),
+                    title: Text(
+                      "Safety & property",
+                      style: TextStyle(
+                        fontSize: 25,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    subtitle: Text(
+                      "Carbon monoxide not reported\nSmoke alarm not reported",
+                    ),
+                  ),
+                  const SizedBox(height: 15),
+                  const Divider(),
+                  const SizedBox(height: 10),
+                  const ListTile(
+                    contentPadding: EdgeInsets.all(0),
+                    leading: Icon(Icons.flag),
+                    title: Text(
+                      "Report this listing",
+                      style: TextStyle(
+                        decoration: TextDecoration.underline,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 15),
                 ],
               ),
             )
@@ -225,8 +278,17 @@ class _DestinationViewScreenState extends State<DestinationViewScreen> {
         ),
       ),
       bottomNavigationBar: Container(
-        decoration: const BoxDecoration(
-          border: Border(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.5),
+              spreadRadius: 4,
+              blurRadius: 4,
+              offset: const Offset(0, 3),
+            ),
+          ],
+          border: const Border(
             top: BorderSide(
               color: Colors.black12,
             ),
@@ -242,7 +304,13 @@ class _DestinationViewScreenState extends State<DestinationViewScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text("\$${widget.destination["price"]} night"),
+                  Text(
+                    "\$${widget.destination["price"]} night",
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
                   Text(_getAvailableDateRangeString(widget.destination)),
                 ],
               ),
@@ -255,15 +323,17 @@ class _DestinationViewScreenState extends State<DestinationViewScreen> {
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
-              onPressed: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        ReserveScreen(listingId: widget.destinationId),
-                  ),
-                );
-              },
+              onPressed: _availableDates == "Not available"
+                  ? null
+                  : () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              ReserveScreen(listingId: widget.destinationId),
+                        ),
+                      );
+                    },
               child: const Text("Reserve"),
             ),
           ],

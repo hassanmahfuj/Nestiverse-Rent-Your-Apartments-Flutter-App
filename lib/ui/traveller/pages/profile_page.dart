@@ -1,8 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:nestiverse/gate.dart';
 import 'package:nestiverse/ui/auth.dart';
+
+import '../../../service/user_service.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -12,14 +12,23 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  final auth = FirebaseAuth.instance;
-  final db = FirebaseFirestore.instance;
+  String fullName = "";
+
+  @override
+  void initState() {
+    initData();
+    super.initState();
+  }
+
+  void initData() async {
+    final user = await getUserProfile();
+    setState(() {
+      fullName = user["firstName"] + " " + user["lastName"];
+    });
+  }
 
   void _switchToHosting() async {
-    await db
-        .collection("users")
-        .doc(auth.currentUser!.uid)
-        .set({"mode": "Host"}, SetOptions(merge: true));
+    await setUserMode("Host");
     _reload();
   }
 
@@ -58,26 +67,26 @@ class _ProfilePageState extends State<ProfilePage> {
                 ],
               ),
               const SizedBox(height: 20),
-              const ListTile(
-                contentPadding: EdgeInsets.all(0),
-                leading: Icon(
+              ListTile(
+                contentPadding: const EdgeInsets.all(0),
+                leading: const Icon(
                   Icons.account_circle,
                   size: 60,
                 ),
                 title: Text(
-                  "Name",
-                  style: TextStyle(
+                  fullName,
+                  style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
-                subtitle: Text(
+                subtitle: const Text(
                   "Show profile",
                   style: TextStyle(
                     color: Colors.grey,
                   ),
                 ),
-                trailing: Icon(Icons.keyboard_arrow_right_sharp),
+                trailing: const Icon(Icons.keyboard_arrow_right_sharp),
               ),
               const SizedBox(height: 10),
               const Divider(),

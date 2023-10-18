@@ -41,7 +41,7 @@ class _GateState extends State<Gate> {
     docRef.get().then(
       (DocumentSnapshot doc) {
         String mode = doc["mode"];
-        if (mode == "Traveller") {
+        if (mode == "Traveler") {
           Navigator.pushReplacementNamed(context, TravellerUi.route);
         } else {
           Navigator.pushReplacementNamed(context, HostUi.route);

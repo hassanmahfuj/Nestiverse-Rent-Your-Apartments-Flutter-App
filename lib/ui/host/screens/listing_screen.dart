@@ -95,6 +95,9 @@ class _ListingScreenState extends State<ListingScreen> {
     {"icon": Icons.apartment.codePoint, "title": "Apartment"},
     {"icon": Icons.house.codePoint, "title": "Barn"},
     {"icon": Icons.directions_boat.codePoint, "title": "Boat"},
+    {"icon": Icons.location_city.codePoint, "title": "Iconic"},
+    {"icon": Icons.bed.codePoint, "title": "Rooms"},
+    {"icon": Icons.local_fire_department_outlined.codePoint, "title": "Trending"},
   ];
 
   // Location
@@ -115,6 +118,10 @@ class _ListingScreenState extends State<ListingScreen> {
     {"icon": Icons.kitchen.codePoint, "title": "Kitchen", "active": false},
     {"icon": Icons.air.codePoint, "title": "AC", "active": false},
     {"icon": Icons.pool.codePoint, "title": "Pool", "active": false},
+    {"icon": Icons.local_parking.codePoint, "title": "Parking", "active": false},
+    {"icon": Icons.camera_outdoor_outlined.codePoint, "title": "CCTV", "active": false},
+    {"icon": Icons.outdoor_grill_outlined.codePoint, "title": "BBQ grill", "active": false},
+    {"icon": Icons.dinner_dining_outlined.codePoint, "title": "Dining", "active": false},
   ];
 
   // Photos

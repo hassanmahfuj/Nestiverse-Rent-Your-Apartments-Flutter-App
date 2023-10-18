@@ -12,7 +12,23 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
+  final ScrollController _controller = ScrollController();
   final TextEditingController _conMessage = TextEditingController();
+  bool _loading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollDown();
+  }
+
+  void _scrollDown() {
+    Future.delayed(const Duration(milliseconds: 200)).then((_) {
+      if (_controller.hasClients) {
+        _controller.jumpTo(_controller.position.maxScrollExtent);
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,6 +53,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 }
                 if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
                   return ListView.builder(
+                    controller: _controller,
                     padding: const EdgeInsets.all(0),
                     itemCount: snapshot.data!.docs.length,
                     itemBuilder: (context, index) {
@@ -73,9 +90,10 @@ class _ChatScreenState extends State<ChatScreen> {
                         padding:
                             EdgeInsets.symmetric(vertical: 5, horizontal: 15),
                         child: Text(
-                            textAlign: TextAlign.center,
-                            "When ypu contact a Host or send a reservation request, you'll see your messages here."),
-                      )
+                          textAlign: TextAlign.center,
+                          "When ypu contact a Host or send a reservation request, you'll see your messages here.",
+                        ),
+                      ),
                     ],
                   );
                 }
@@ -88,12 +106,21 @@ class _ChatScreenState extends State<ChatScreen> {
               controller: _conMessage,
               decoration: InputDecoration(
                 suffixIcon: IconButton(
-                  icon: const Icon(Icons.send),
-                  onPressed: () async {
-                    await forceSendMessage(
-                        widget.conversationId, _conMessage.text);
-                    _conMessage.clear();
-                  },
+                  icon: Icon(_loading ? Icons.sync : Icons.send),
+                  onPressed: _loading
+                      ? null
+                      : () async {
+                          setState(() {
+                            _loading = true;
+                          });
+                          await forceSendMessage(
+                              widget.conversationId, _conMessage.text);
+                          _conMessage.clear();
+                          setState(() {
+                            _loading = false;
+                          });
+                          _scrollDown();
+                        },
                 ),
               ),
             ),

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:nestiverse/ui/traveller/screens/destination_view_screen.dart';
@@ -21,7 +22,11 @@ class _ExplorePageState extends State<ExplorePage> {
   }
 
   void getDestinations() async {
-    FirebaseFirestore.instance.collection("listings").get().then(
+    FirebaseFirestore.instance
+        .collection("listings")
+        .where("hostUid", isNotEqualTo: FirebaseAuth.instance.currentUser!.uid)
+        .get()
+        .then(
       (querySnapshot) {
         for (var docSnapshot in querySnapshot.docs) {
           _destinationsId.add(docSnapshot.id);
@@ -51,7 +56,7 @@ class _ExplorePageState extends State<ExplorePage> {
       child: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
             child: Row(
               children: [
                 Expanded(
@@ -101,9 +106,36 @@ class _ExplorePageState extends State<ExplorePage> {
               ],
             ),
           ),
+          Visibility(
+            visible: _destinations.isEmpty,
+            child: const Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.symmetric(vertical: 10, horizontal: 0),
+                    child: Icon(
+                      Icons.not_interested_outlined,
+                      size: 40,
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(vertical: 5, horizontal: 0),
+                    child: Text(
+                      "No listing found!",
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
           Expanded(
             child: ListView.builder(
-              padding: const EdgeInsets.only(top: 40, left: 30, right: 30),
+              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
               itemCount: _destinations.length,
               itemBuilder: (context, index) {
                 return GestureDetector(
@@ -155,11 +187,13 @@ class _ExplorePageState extends State<ExplorePage> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            _destinations[index]["title"],
-                            style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w500,
+                          Expanded(
+                            child: Text(
+                              _destinations[index]["title"],
+                              style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
                           ),
                           const Row(
@@ -179,14 +213,6 @@ class _ExplorePageState extends State<ExplorePage> {
                             ],
                           ),
                         ],
-                      ),
-                      Text(
-                        '${_destinations[index]["title"]} kilometers',
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w400,
-                          color: Colors.grey,
-                        ),
                       ),
                       Text(
                         _getAvailableDateRangeString(_destinations[index]),

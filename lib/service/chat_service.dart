@@ -79,14 +79,11 @@ Future<void> forceSendMessage(String conversationID, String message) async {
 }
 
 Stream<QuerySnapshot<Map<String, dynamic>>> getConversationsForUser() {
-  // Get the current user's ID (you should have authenticated the user already)
   final User? currentUser = FirebaseAuth.instance.currentUser;
   final String currentUserId = currentUser!.uid;
 
-  // Get a reference to the Firestore instance
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-  // Query the Firestore database to get conversations for the user
   return firestore
       .collection('conversations')
       .where('participants', arrayContains: currentUserId)
@@ -95,10 +92,8 @@ Stream<QuerySnapshot<Map<String, dynamic>>> getConversationsForUser() {
 
 Stream<QuerySnapshot<Map<String, dynamic>>> getConversationMessages(
     String conversationID) {
-  // Get a reference to the Firestore instance
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-  // Query the Firestore database to get messages for the specified conversation
   return firestore
       .collection('conversations')
       .doc(conversationID)

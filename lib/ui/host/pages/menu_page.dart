@@ -1,7 +1,6 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:nestiverse/gate.dart';
+import 'package:nestiverse/service/user_service.dart';
 import 'package:nestiverse/ui/auth.dart';
 import 'package:nestiverse/ui/host/screens/listing_screen.dart';
 import 'package:nestiverse/ui/host/screens/listings_screen.dart';
@@ -14,14 +13,9 @@ class MenuPage extends StatefulWidget {
 }
 
 class _MenuPageState extends State<MenuPage> {
-  final auth = FirebaseAuth.instance;
-  final db = FirebaseFirestore.instance;
 
   void _switchToTravelling() async {
-    await db
-        .collection("users")
-        .doc(auth.currentUser!.uid)
-        .set({"mode": "Traveller"}, SetOptions(merge: true));
+    await setUserMode("Traveler");
     _reload();
   }
 
