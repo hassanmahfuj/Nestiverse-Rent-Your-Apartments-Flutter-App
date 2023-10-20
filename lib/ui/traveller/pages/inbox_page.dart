@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nestiverse/service/chat_service.dart';
 import 'package:nestiverse/ui/traveller/screens/chat_screen.dart';
+import 'package:nestiverse/util.dart';
 
 class InboxPage extends StatefulWidget {
   const InboxPage({super.key});
@@ -49,12 +50,30 @@ class _InboxPageState extends State<InboxPage> {
                             ),
                           );
                         },
-                        title: Text(snapshot.data!.docs[index]
-                                ["participantsName"][
-                            getRecipientIndex(
-                                snapshot.data!.docs[index]["participants"])]),
-                        subtitle:
-                            Text(snapshot.data!.docs[index]["lastMessage"]),
+                        leading: const Icon(
+                          Icons.account_circle,
+                          size: 45,
+                        ),
+                        title: Text(
+                          snapshot.data!.docs[index]["participantsName"][
+                              getRecipientIndex(
+                                  snapshot.data!.docs[index]["participants"])],
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        subtitle: Text(
+                          snapshot.data!.docs[index]["lastMessage"],
+                          style: const TextStyle(
+                            color: Colors.grey,
+                          ),
+                        ),
+                        trailing: Text(
+                          formatDate(snapshot.data!.docs[index]["timestamp"].toDate()),
+                          style: const TextStyle(
+                            color: Colors.grey,
+                          ),
+                        ),
                       );
                     },
                   );

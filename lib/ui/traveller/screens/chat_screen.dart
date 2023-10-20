@@ -1,4 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:nestiverse/util.dart';
 
 import '../../../service/chat_service.dart';
 
@@ -57,9 +59,46 @@ class _ChatScreenState extends State<ChatScreen> {
                     padding: const EdgeInsets.all(0),
                     itemCount: snapshot.data!.docs.length,
                     itemBuilder: (context, index) {
-                      return ListTile(
-                        title: Text(snapshot.data!.docs[index]["senderName"]),
-                        subtitle: Text(snapshot.data!.docs[index]["message"]),
+                      bool self = snapshot.data!.docs[index]["sender"] ==
+                          FirebaseAuth.instance.currentUser!.uid;
+                      return Align(
+                        alignment:
+                            self ? Alignment.centerRight : Alignment.centerLeft,
+                        child: Container(
+                          constraints: BoxConstraints(
+                            maxWidth:
+                                MediaQuery.of(context).size.width / (10 / 8),
+                          ),
+                          margin: const EdgeInsets.fromLTRB(10, 0, 10, 10),
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: self ? Colors.pinkAccent : Colors.grey,
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(15)),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Text(
+                                snapshot.data!.docs[index]["message"],
+                                style: const TextStyle(
+                                  fontSize: 17,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              const SizedBox(width: 6),
+                              Text(
+                                formatDate(snapshot
+                                    .data!.docs[index]["timestamp"]
+                                    .toDate()),
+                                style: const TextStyle(
+                                  color: Colors.white54,
+                                  fontSize: 10,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       );
                     },
                   );
@@ -100,8 +139,9 @@ class _ChatScreenState extends State<ChatScreen> {
               },
             ),
           ),
+          const Divider(height: 0),
           Padding(
-            padding: const EdgeInsets.all(15),
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 10),
             child: TextField(
               controller: _conMessage,
               decoration: InputDecoration(
