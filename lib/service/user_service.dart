@@ -4,6 +4,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 final db = FirebaseFirestore.instance;
 final auth = FirebaseAuth.instance;
 
+String getCurrentUserUid() {
+  return auth.currentUser!.uid;
+}
+
 Future<Map<String, dynamic>> getUserProfile() async {
   DocumentSnapshot<Map<String, dynamic>> doc =
       await db.collection("users").doc(auth.currentUser!.uid).get();

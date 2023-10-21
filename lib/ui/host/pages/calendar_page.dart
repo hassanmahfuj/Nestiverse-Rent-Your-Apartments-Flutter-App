@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../../../service/user_service.dart';
+
 class CalendarPage extends StatefulWidget {
   const CalendarPage({super.key});
 
@@ -54,7 +56,10 @@ class _CalendarPageState extends State<CalendarPage> {
             const SizedBox(height: 20),
             Expanded(
               child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-                stream: db.collection("listings").snapshots(),
+                stream: db
+                    .collection("listings")
+                    .where("hostId", isEqualTo: getCurrentUserUid())
+                    .snapshots(),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     return ListView.builder(

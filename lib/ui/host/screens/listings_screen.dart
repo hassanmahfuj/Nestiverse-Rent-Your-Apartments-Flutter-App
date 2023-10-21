@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:nestiverse/ui/host/screens/listing_screen.dart';
 
+import '../../../service/user_service.dart';
+
 class ListingsScreen extends StatefulWidget {
   const ListingsScreen({super.key});
 
@@ -36,7 +38,7 @@ class _ListingsScreenState extends State<ListingsScreen> {
                 child: StreamBuilder(
                   stream: db
                       .collection("listings")
-                      // .where("availability", isLessThan: DateTime(2023, 10, 10))
+                      .where("hostId", isEqualTo: getCurrentUserUid())
                       .snapshots(),
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {

@@ -97,7 +97,10 @@ class _ListingScreenState extends State<ListingScreen> {
     {"icon": Icons.directions_boat.codePoint, "title": "Boat"},
     {"icon": Icons.location_city.codePoint, "title": "Iconic"},
     {"icon": Icons.bed.codePoint, "title": "Rooms"},
-    {"icon": Icons.local_fire_department_outlined.codePoint, "title": "Trending"},
+    {
+      "icon": Icons.local_fire_department_outlined.codePoint,
+      "title": "Trending"
+    },
   ];
 
   // Location
@@ -118,10 +121,26 @@ class _ListingScreenState extends State<ListingScreen> {
     {"icon": Icons.kitchen.codePoint, "title": "Kitchen", "active": false},
     {"icon": Icons.air.codePoint, "title": "AC", "active": false},
     {"icon": Icons.pool.codePoint, "title": "Pool", "active": false},
-    {"icon": Icons.local_parking.codePoint, "title": "Parking", "active": false},
-    {"icon": Icons.camera_outdoor_outlined.codePoint, "title": "CCTV", "active": false},
-    {"icon": Icons.outdoor_grill_outlined.codePoint, "title": "BBQ grill", "active": false},
-    {"icon": Icons.dinner_dining_outlined.codePoint, "title": "Dining", "active": false},
+    {
+      "icon": Icons.local_parking.codePoint,
+      "title": "Parking",
+      "active": false
+    },
+    {
+      "icon": Icons.camera_outdoor_outlined.codePoint,
+      "title": "CCTV",
+      "active": false
+    },
+    {
+      "icon": Icons.outdoor_grill_outlined.codePoint,
+      "title": "BBQ grill",
+      "active": false
+    },
+    {
+      "icon": Icons.dinner_dining_outlined.codePoint,
+      "title": "Dining",
+      "active": false
+    },
   ];
 
   // Photos
@@ -152,6 +171,17 @@ class _ListingScreenState extends State<ListingScreen> {
     } catch (error) {
       debugPrint(error.toString());
     }
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
+  void deletePhoto(int index) async {
+    setState(() {
+      _isLoading = true;
+    });
+    await FirebaseStorage.instance.refFromURL(_photos[index]).delete();
+    _photos.removeAt(index);
     setState(() {
       _isLoading = false;
     });
@@ -316,6 +346,7 @@ class _ListingScreenState extends State<ListingScreen> {
                       padding: const EdgeInsets.symmetric(
                           vertical: 10, horizontal: 0),
                       child: GridView.builder(
+                        physics: const NeverScrollableScrollPhysics(),
                         shrinkWrap: true,
                         gridDelegate:
                             const SliverGridDelegateWithFixedCrossAxisCount(
@@ -588,6 +619,7 @@ class _ListingScreenState extends State<ListingScreen> {
                       padding: const EdgeInsets.symmetric(
                           vertical: 10, horizontal: 0),
                       child: GridView.builder(
+                        physics: const NeverScrollableScrollPhysics(),
                         shrinkWrap: true,
                         gridDelegate:
                             const SliverGridDelegateWithFixedCrossAxisCount(
@@ -719,16 +751,38 @@ class _ListingScreenState extends State<ListingScreen> {
                             physics: const NeverScrollableScrollPhysics(),
                             itemCount: _photos.length,
                             itemBuilder: (context, index) {
-                              return Card(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(10),
-                                  child: Image.network(
-                                    _photos[index],
+                              return Stack(
+                                children: [
+                                  Card(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(10),
+                                      child: Image.network(
+                                        _photos[index],
+                                      ),
+                                    ),
                                   ),
-                                ),
+                                  Positioned(
+                                    top: 5,
+                                    right: 5,
+                                    child: IconButton(
+                                      onPressed: () {
+                                        deletePhoto(index);
+                                      },
+                                      style: IconButton.styleFrom(
+                                        backgroundColor: Colors.white,
+                                        side: const BorderSide(width: 1),
+                                      ),
+                                      icon: const Icon(
+                                        Icons.close,
+                                        size: 25,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               );
                             },
                           ),
@@ -803,10 +857,15 @@ class _ListingScreenState extends State<ListingScreen> {
                         fontWeight: FontWeight.w500,
                       ),
                       decoration: const InputDecoration(
-                        prefix: Text(
-                          "৳",
-                          style: TextStyle(
-                            color: Colors.black,
+                        prefixIcon: Padding(
+                          padding: EdgeInsets.fromLTRB(0, 15, 0, 0),
+                          child: Text(
+                            "৳",
+                            textAlign: TextAlign.end,
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 45,
+                            ),
                           ),
                         ),
                         border: InputBorder.none,

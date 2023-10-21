@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
+import '../../../service/user_service.dart';
 import '../screens/booking_details.dart';
 
 class NowPage extends StatefulWidget {
@@ -39,6 +40,7 @@ class _NowPageState extends State<NowPage> {
               child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
                 stream: FirebaseFirestore.instance
                     .collection("bookings")
+                    .where("hostId", isEqualTo: getCurrentUserUid())
                     .snapshots(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
