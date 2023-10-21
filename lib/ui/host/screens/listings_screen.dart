@@ -38,7 +38,7 @@ class _ListingsScreenState extends State<ListingsScreen> {
                 child: StreamBuilder(
                   stream: db
                       .collection("listings")
-                      .where("hostId", isEqualTo: getCurrentUserUid())
+                      .where("hostUid", isEqualTo: getCurrentUserUid())
                       .snapshots(),
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {

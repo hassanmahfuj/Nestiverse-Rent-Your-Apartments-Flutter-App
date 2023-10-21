@@ -6,6 +6,8 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
+import 'select_location_screen.dart';
+
 class ListingScreen extends StatefulWidget {
   final String? listingId;
 
@@ -405,20 +407,66 @@ class _ListingScreenState extends State<ListingScreen> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    content: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 10, horizontal: 0),
-                      child: TextField(
-                        controller: _conAddress,
-                        decoration: const InputDecoration(
-                          labelText: "Address",
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(10),
+                    content: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 10, horizontal: 0),
+                          child: TextField(
+                            controller: _conAddress,
+                            decoration: const InputDecoration(
+                              labelText: "Address",
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(10),
+                                ),
+                              ),
                             ),
                           ),
                         ),
-                      ),
+                        InkWell(
+                          onTap: () async {
+                            final result = await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    const SelectLocationScreen(),
+                              ),
+                            );
+                            if (result != null && result is List<String>) {
+                              List<String> data = result;
+                              _conAddress.text = data[0];
+                              _locationLat = data[1];
+                              _locationLng = data[2];
+                            }
+                          },
+                          borderRadius: BorderRadius.circular(10),
+                          child: Container(
+                            padding: const EdgeInsets.all(15),
+                            decoration: BoxDecoration(
+                              border: Border.all(width: 1, color: Colors.grey),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: const Row(
+                              children: [
+                                Icon(
+                                  Icons.map,
+                                  size: 30,
+                                ),
+                                SizedBox(width: 15),
+                                Text(
+                                  "Select from map",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                      ],
                     ),
                   ),
                   Step(
