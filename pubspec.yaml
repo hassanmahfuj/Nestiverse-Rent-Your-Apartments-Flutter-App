@@ -35,11 +35,11 @@ dev_dependencies:
 flutter_launcher_icons:
   android: true
   ios: true
-  image_path: "assets/icon/icon.png"
+  image_path: "assets/icon/nu_logo1.png"
 
 flutter_native_splash:
-  color: "#FFFFFF"
-  image: "assets/icon/icon.png"
+  color: "#E91E63"
+  image: "assets/icon/nu_logo2.png"
 
 # The following section is specific to Flutter packages.
 flutter:

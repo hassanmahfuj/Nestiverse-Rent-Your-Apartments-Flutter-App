@@ -58,7 +58,7 @@ class _CalendarPageState extends State<CalendarPage> {
               child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
                 stream: db
                     .collection("listings")
-                    .where("hostId", isEqualTo: getCurrentUserUid())
+                    .where("hostUid", isEqualTo: getCurrentUserUid())
                     .snapshots(),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {

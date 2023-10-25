@@ -40,7 +40,7 @@ class _NowPageState extends State<NowPage> {
               child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
                 stream: FirebaseFirestore.instance
                     .collection("bookings")
-                    .where("hostId", isEqualTo: getCurrentUserUid())
+                    .where("hostUid", isEqualTo: getCurrentUserUid())
                     .snapshots(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {

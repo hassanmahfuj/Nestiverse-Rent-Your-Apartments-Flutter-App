@@ -167,7 +167,8 @@ class _BookingDetailsState extends State<BookingDetails> {
                         const SizedBox(height: 10),
                         Visibility(
                           // manage status if its pending or not expired
-                          visible: snapshot.data!["status"] == "Pending" || !isExpired,
+                          // visible: snapshot.data!["status"] == "Pending" || isExpired,
+                          visible: snapshot.data!["status"] == "Pending",
                           child: Card(
                             shape: const RoundedRectangleBorder(
                               side: BorderSide(color: Colors.grey),
